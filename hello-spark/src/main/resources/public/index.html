@@ -14,7 +14,7 @@
 
   <template is="auto-binding" id="t">
 
-    <core-ajax auto url="/hellojson" handleAs="json" response="{{resp}}"></core-ajax>
+    <core-ajax auto url="/users/1" handleAs="json" response="{{resp}}"></core-ajax>
     <!-- Route controller. -->
     <flatiron-director route="{{route}}" autoHash></flatiron-director>
 
@@ -84,8 +84,8 @@
           </section>
           <section hash="P4" layout vertical center-center>
             <div>
-              <h3>P4: {{resp.fooInt}}</h3>
-              <p>{{resp.message}}</p>
+              <h3>{{resp.username}}</h3>
+              <p>{{resp.email}}</p>
             </div>
           </section>
           <section hash="P5" layout vertical center-center>

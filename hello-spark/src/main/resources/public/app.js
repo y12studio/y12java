@@ -9,7 +9,7 @@ template.pages = [
   {name: 'Spark', hash: 'P1'},
   {name: 'OrmLite', hash: 'P2'},
   {name: 'Docker', hash: 'P3'},
-  {name: 'using', hash: 'P4'},
+  {name: 'Haha', hash: 'P4'},
   {name: 'Polymer', hash: 'P5'},
 ];
 
