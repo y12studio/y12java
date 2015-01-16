@@ -21,6 +21,8 @@ import org.bitcoinj.utils.Threading;
 
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 
 public class PeerWatcher {
 
@@ -81,14 +83,14 @@ public class PeerWatcher {
 		}
 	};
 
-	public PeerWatcher(String fbToken) {
+	public PeerWatcher(String fbToken,String fbUrl) {
 		BriefLogFormatter.init();
 		NetworkParameters params = MainNetParams.get();
 		peerGroup = new PeerGroup(params, null /* no chain */);
 		peerGroup.setUserAgent("PeerMonitor", "1.0");
 		peerGroup.addPeerDiscovery(new DnsDiscovery(params));
 		peerGroup.addEventListener(pev, Threading.SAME_THREAD);
-		eventBus.register(new BlockChainListener(fbToken));
+		eventBus.register(new BlockChainListener(fbToken,fbUrl));
 	}
 
 	public void start() {
@@ -98,13 +100,12 @@ public class PeerWatcher {
 
 	public static void main(String[] args) {
 
-		String fbToken = System.getProperty("fb.token");
-		if (fbToken == null) {
-			System.out.println("java -Dfb.token=xxx -jar app.jar");
-			System.exit(-1);
-		}
-
-		PeerWatcher watcher = new PeerWatcher(fbToken);
+		Config conf = ConfigFactory.load();
+		String confFbToken = conf.getString("firebase_token");
+		String confFbUrl = conf.getString("firebase_url");
+		System.out.println(confFbToken);
+		System.out.println(confFbUrl);
+		PeerWatcher watcher = new PeerWatcher(confFbToken, confFbUrl);
 		watcher.start();
 	}
 

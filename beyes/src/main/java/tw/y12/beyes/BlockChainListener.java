@@ -6,6 +6,7 @@ import org.bitcoinj.core.Block;
 import org.bitcoinj.core.Message;
 
 import com.firebase.client.AuthData;
+import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
 import com.firebase.client.Firebase;
 import com.firebase.client.Firebase.AuthResultHandler;
@@ -27,7 +28,7 @@ public class BlockChainListener {
 	private ValueEventListener vel = new ValueEventListener() {
 		public void onDataChange(DataSnapshot snapshot) {
 			System.out.println("Data Snapshot : " + snapshot.getValue());
-
+			// setData(snapshot);
 		}
 
 		public void onCancelled(FirebaseError error) {
@@ -46,26 +47,79 @@ public class BlockChainListener {
 		}
 	};
 
-	public BlockChainListener(String fbToken) {
+	private ChildEventListener blocksCev = new ChildEventListener() {
+
+		public void onCancelled(FirebaseError arg0) {
+			// TODO Auto-generated method stub
+		}
+
+		public void onChildAdded(DataSnapshot snapshot, String prevkey) {
+			Firebase last = summaryRef.child("lastest");
+			last.child("hash").setValue(snapshot.getKey());
+			last.child("value").setValue(snapshot.getValue());
+		}
+
+		public void onChildChanged(DataSnapshot arg0, String arg1) {
+			// TODO Auto-generated method stub
+
+		}
+
+		public void onChildMoved(DataSnapshot arg0, String arg1) {
+			// TODO Auto-generated method stub
+
+		}
+
+		public void onChildRemoved(DataSnapshot arg0) {
+			// TODO Auto-generated method stub
+
+		}
+
+	};
+
+	private ValueEventListener blocksVel = new ValueEventListener() {
+		public void onDataChange(DataSnapshot snapshot) {
+			summaryRef.child("count").setValue(snapshot.getChildrenCount());
+		}
+
+		public void onCancelled(FirebaseError error) {
+			System.out.println(error.getMessage());
+		}
+	};
+
+	private Firebase blocksRef;
+
+	private Firebase summaryRef;
+
+	public BlockChainListener(String fbToken, String rootUrl) {
 		// curl https://crackling-heat-6124.firebaseio.com/beyes/t150115.json
-		
-		fbRef = new Firebase(
-				"https://crackling-heat-6124.firebaseio.com/beyes/t150115");
-		fbRef.addValueEventListener(vel);
+		// curl
+		// https://crackling-heat-6124.firebaseio.com/beyes/t150116/blocks.json
+		// curl
+		// https://crackling-heat-6124.firebaseio.com/beyes/t150116/summary.json
+
+		fbRef = new Firebase(rootUrl);
 		fbRef.authWithCustomToken(fbToken, handler);
+
+		// fbRef.addValueEventListener(vel);
+
+		blocksRef = fbRef.child("blocks");
+		summaryRef = fbRef.child("summary");
+
+		blocksRef.addChildEventListener(blocksCev);
+		blocksRef.addValueEventListener(blocksVel);
 	}
 
 	@Subscribe
 	public void listenInvBlock(EventInvBlock ev) {
 		String hash = ev.getHash();
-		System.out.println("EvBus get inv blcok :" + hash);
+		System.out.println("EvBus inv blcok :" + hash);
 	}
 
 	@Subscribe
 	public void listenInvTx(EventInvTx ev) {
 		String hash = ev.getHash();
 		if (_debug) {
-			System.out.println("EvBus get inv tx :" + hash);
+			System.out.println("EvBus inv tx :" + hash);
 		}
 
 		int tcount = mset.count("org.bitcoinj.core.Transaction");
@@ -77,12 +131,14 @@ public class BlockChainListener {
 	@Subscribe
 	public void listenGetBlock(EventGetBlock ev) {
 		Block b = ev.getBlock();
-		System.out.println("EvBus get block :" + b.getHashAsString());
+		System.out.println("EvBus Get Block :" + b.getHashAsString());
 		Map<String, Object> r = Maps.newHashMap();
 		r.put("epoch", b.getTimeSeconds());
 		r.put("txsize", b.getTransactions().size());
-		Firebase blockRef = fbRef.child(b.getHashAsString());
+		r.put("date", b.getTime().toGMTString());
+		Firebase blockRef = blocksRef.child(b.getHashAsString());
 		blockRef.setValue(r);
+
 	}
 
 	@Subscribe

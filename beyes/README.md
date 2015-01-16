@@ -1,3 +1,22 @@
+TEST Fri Jan 16 08:08:51 UTC 2015
+
+https://crackling-heat-6124.firebaseio.com/beyes/t150116/summary.json
+
+https://crackling-heat-6124.firebaseio.com/beyes/t150116/blocks.json
+
+
+```
+pi@raspberrypi ~ $ cat beyes-0.0.2/conf.json
+{
+"firebase_token" : "xxxxxxx"   ,
+"firebase_url" : "https://crackling-heat-6124.firebaseio.com/beyes/t150116"
+}
+$ cd beyes-0.0.2
+$ bin/beyes &
+
+```
+
+
 TEST on Raspberry Pi and Firebase https://crackling-heat-6124.firebaseio.com/beyes/t150115.json
 
 ```
