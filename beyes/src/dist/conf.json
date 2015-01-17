@@ -1,4 +1,8 @@
 {
 "firebase_token" : "_FIREBASE_TOKEN_"	,
-"firebase_url" : "_FIREBASE_URL_"
+"firebase_url" : "_FIREBASE_URL_",
+"wallet_mcodes": "love home blba blaa haha",
+"wallet_ctime": 1421120000,
+"wallet_filename": "dev1501",
+"wallet_filedir": "bin"
 }

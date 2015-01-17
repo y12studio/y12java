@@ -1,3 +1,21 @@
+
+TEST 0.0.3
+
+https://crackling-heat-6124.firebaseio.com/beyes/t150117.json
+
+
+```
+pi@raspberrypi ~/beyes-0.0.3 $ date
+Sat Jan 17 04:55:31 UTC 2015
+pi@raspberrypi ~ $ cd beyes-0.0.3
+$ cd beyes-0.0.3
+$ bin/beyes &
+
+```
+
+
+
+
 TEST Fri Jan 16 08:08:51 UTC 2015
 
 https://crackling-heat-6124.firebaseio.com/beyes/t150116/summary.json

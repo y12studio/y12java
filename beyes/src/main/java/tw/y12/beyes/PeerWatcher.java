@@ -90,7 +90,7 @@ public class PeerWatcher {
 		peerGroup.setUserAgent("PeerMonitor", "1.0");
 		peerGroup.addPeerDiscovery(new DnsDiscovery(params));
 		peerGroup.addEventListener(pev, Threading.SAME_THREAD);
-		eventBus.register(new BlockChainListener(fbToken,fbUrl));
+		eventBus.register(new PeerFirebaseListener(fbToken,fbUrl));
 	}
 
 	public void start() {
