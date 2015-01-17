@@ -116,6 +116,14 @@ public class WalletFirebaseListener {
 		String addr = ev.getPubAddr();
 		walletRef.child("address").setValue(addr);
 	}
+	
+
+	@Subscribe
+	public void listenEvDebug(EventDebug ev) {
+		System.out.println("Debug in Firebase Listener: " + ev.getMessage());
+		summaryRef.child("debug").setValue(ev.getMessage());
+	}
+
 
 	@Subscribe
 	public void listenStoreBlock(EventStoreBlock ev) {

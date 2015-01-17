@@ -20,6 +20,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
 import com.google.common.eventbus.Subscribe;
 
+@Deprecated
 public class PeerFirebaseListener {
 
 	protected static final Logger log = LoggerFactory

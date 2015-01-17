@@ -24,6 +24,7 @@ import com.google.common.eventbus.EventBus;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
+@Deprecated
 public class PeerWatcher {
 
 	private EventBus eventBus = new EventBus("peerwatcher");

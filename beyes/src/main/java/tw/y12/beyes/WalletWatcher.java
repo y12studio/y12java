@@ -10,7 +10,6 @@ import org.bitcoinj.core.Block;
 import org.bitcoinj.core.BlockChainListener;
 import org.bitcoinj.core.Coin;
 import org.bitcoinj.core.ECKey;
-import org.bitcoinj.core.GetDataMessage;
 import org.bitcoinj.core.InsufficientMoneyException;
 import org.bitcoinj.core.InventoryItem;
 import org.bitcoinj.core.InventoryMessage;
@@ -27,14 +26,12 @@ import org.bitcoinj.core.Wallet;
 import org.bitcoinj.core.Wallet.SendRequest;
 import org.bitcoinj.core.WalletEventListener;
 import org.bitcoinj.core.AbstractBlockChain.NewBlockType;
-import org.bitcoinj.crypto.MnemonicCode;
 import org.bitcoinj.kits.WalletAppKit;
 import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.script.Script;
 import org.bitcoinj.script.ScriptBuilder;
 import org.bitcoinj.script.ScriptOpCodes;
 import org.bitcoinj.store.UnreadableWalletException;
-import org.bitcoinj.utils.Threading;
 import org.bitcoinj.wallet.DeterministicSeed;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,12 +39,13 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
 public class WalletWatcher {
 
-	private final EventBus eventBus = new EventBus("walletwatcher");
+	private final EventBus eventBus;
 
 	protected static final Logger log = LoggerFactory
 			.getLogger(WalletWatcher.class);
@@ -165,6 +163,8 @@ public class WalletWatcher {
 
 	public WalletWatcher() {
 		params = MainNetParams.get();
+		eventBus = new EventBus("walletwatcher");
+		eventBus.register(this);
 	}
 
 	public static DeterministicSeed buildRandomSeedAndBackup(
@@ -186,7 +186,7 @@ public class WalletWatcher {
 				name);
 		
 		kit.restoreWalletFromSeed(seed);
-		kit.setBlockingStartup(true);
+		kit.setBlockingStartup(false);
 		kit.startAsync();
 		kit.awaitRunning();
 		kit.chain().addListener(bevl);
@@ -212,8 +212,14 @@ public class WalletWatcher {
 			e.printStackTrace();
 		}
 	}
+	
+	@Subscribe
+	public void listenEvDebug(EventDebug ev) {
+		System.out.println("Debug in WalletWatcher: " + ev.getMessage());
+		System.out.println("Balance="+wallet.getBalance());
+	}
 
-	public static void main(String[] args) throws UnreadableWalletException {
+	public static void main(String[] args) throws Exception {
 		Config conf = ConfigFactory.load();
 		String fbToken = conf.getString("firebase_token");
 		String fbUrl = conf.getString("firebase_url");
@@ -224,6 +230,7 @@ public class WalletWatcher {
 		WalletWatcher app = new WalletWatcher();
 		app.getEventBus().register(new WalletFirebaseListener(fbToken, fbUrl));
 		app.startKit(mCodes, creationTime, wFiledir, wFilename);
+		new WebServer().start(app.getEventBus());
 	}
 
 	public EventBus getEventBus() {
