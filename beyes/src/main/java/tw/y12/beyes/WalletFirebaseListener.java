@@ -115,6 +115,7 @@ public class WalletFirebaseListener {
 	public void listenWalletAddr(EventWalletAddr ev) {
 		String addr = ev.getPubAddr();
 		walletRef.child("address").setValue(addr);
+		log.info("Wallet Address : " + addr);
 	}
 	
 

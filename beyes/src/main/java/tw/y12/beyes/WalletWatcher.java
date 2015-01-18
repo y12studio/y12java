@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.bitcoinj.core.AbstractPeerEventListener;
 import org.bitcoinj.core.Address;
+import org.bitcoinj.core.AddressFormatException;
 import org.bitcoinj.core.Block;
 import org.bitcoinj.core.BlockChainListener;
 import org.bitcoinj.core.Coin;
@@ -23,7 +24,9 @@ import org.bitcoinj.core.StoredBlock;
 import org.bitcoinj.core.Transaction;
 import org.bitcoinj.core.VerificationException;
 import org.bitcoinj.core.Wallet;
+import org.bitcoinj.core.Wallet.BalanceType;
 import org.bitcoinj.core.Wallet.SendRequest;
+import org.bitcoinj.core.Wallet.SendResult;
 import org.bitcoinj.core.WalletEventListener;
 import org.bitcoinj.core.AbstractBlockChain.NewBlockType;
 import org.bitcoinj.kits.WalletAppKit;
@@ -43,6 +46,9 @@ import com.google.common.eventbus.Subscribe;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+
 public class WalletWatcher {
 
 	private final EventBus eventBus;
@@ -51,7 +57,7 @@ public class WalletWatcher {
 			.getLogger(WalletWatcher.class);
 
 	private final NetworkParameters params;
-	
+
 	private Wallet wallet;
 
 	private WalletEventListener wevl = new WalletEventListener() {
@@ -152,7 +158,7 @@ public class WalletWatcher {
 			}
 			return super.onPreMessageReceived(peer, m);
 		}
-		
+
 		@Override
 		public void onTransaction(Peer peer, Transaction t) {
 			String tid = t.getHashAsString();
@@ -177,46 +183,74 @@ public class WalletWatcher {
 		return dseed;
 	}
 
-	public void startKit(String mCodes, long creationTime, String dir, String name)
-			throws UnreadableWalletException {
-		String passphrase = "";
-		DeterministicSeed seed = new DeterministicSeed(mCodes, null,
-				passphrase, creationTime);
-		WalletAppKit kit = new WalletAppKit(params, new File(dir),
-				name);
+	public void startKitFromSeed(String mCodes, long creationTime, String dir,
+			String name) throws UnreadableWalletException {
+		File vWalletFile = new File(dir, name + ".wallet");
+		File chainFile = new File(dir, name + ".spvchain");
+		WalletAppKit kit = null;
 		
-		kit.restoreWalletFromSeed(seed);
-		kit.setBlockingStartup(false);
+		if (!vWalletFile.exists()) {
+			// redownload chain file to restore from seed. 
+			if (chainFile.exists()) {
+				chainFile.delete();
+			}
+
+			String passphrase = "";
+			DeterministicSeed seed = new DeterministicSeed(mCodes, null,
+					passphrase, creationTime);
+			kit = new WalletAppKit(params, new File(dir), name);
+			kit.restoreWalletFromSeed(seed);
+		} else {
+			kit = new WalletAppKit(params, new File(dir), name);
+		}
+
+		kit.setBlockingStartup(true);
 		kit.startAsync();
 		kit.awaitRunning();
 		kit.chain().addListener(bevl);
-		// block by wallet listener
-		// kit.peerGroup().addEventListener(pevl,Threading.SAME_THREAD);
-		
-		wallet = kit.wallet();
+
+		this.wallet = checkNotNull(kit.wallet());
 		String pubAddr = wallet.currentReceiveAddress().toString();
 		getEventBus().post(new EventWalletAddr(pubAddr));
-
 		wallet.addEventListener(wevl);
+
+		System.out.println("Balance=" + wallet.getBalance().getValue());
+		System.out.println("Balance(Estimated)="
+				+ wallet.getBalance(BalanceType.ESTIMATED));
 	}
-	
-	private void sendWithOpReturn(Address toAddr, Coin value){
-		 Transaction tx = new Transaction(params);
-		 Script script = new ScriptBuilder().op(ScriptOpCodes.OP_RETURN).data("hello world!".getBytes()).build();
-		 tx.addOutput(value, toAddr);
-		 tx.addOutput(Coin.ZERO, script);
-		 SendRequest request = Wallet.SendRequest.forTx(tx);
-		 try {
-			wallet.completeTx(request);
+
+	private void sendOpReturnMessage(String msg, String toAddrStr, Coin value) {
+		try {
+			Address toAddr = new Address(params, toAddrStr);
+			Transaction tx = new Transaction(params);
+			Script script = new ScriptBuilder().op(ScriptOpCodes.OP_RETURN)
+					.data(msg.getBytes()).build();
+			tx.addOutput(value, toAddr);
+			tx.addOutput(Coin.ZERO, script);
+			SendRequest request = Wallet.SendRequest.forTx(tx);
+			// request.fee = Coin.valueOf(1059);
+			// Debug completeTx only
+			// wallet.completeTx(request);
+			//
+			SendResult r = wallet.sendCoins(request);
+			log.info("coins sent. transaction hash: " + r.tx.getHashAsString());
 		} catch (InsufficientMoneyException e) {
+			e.printStackTrace();
+		} catch (AddressFormatException e) {
+			e.printStackTrace();
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
+	public void listenEvSend(EventDebug ev) {
+		sendOpReturnMessage("BK" + wallet.getLastBlockSeenHeight()+"@TAICHUNG",
+				"1KV5jcfCWrFxRMnJW8cCVws9E2ZqVCvZ3h", Coin.valueOf(21059));
+	}
+
 	@Subscribe
 	public void listenEvDebug(EventDebug ev) {
 		System.out.println("Debug in WalletWatcher: " + ev.getMessage());
-		System.out.println("Balance="+wallet.getBalance());
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -229,7 +263,9 @@ public class WalletWatcher {
 		String wFiledir = conf.getString("wallet_filedir");
 		WalletWatcher app = new WalletWatcher();
 		app.getEventBus().register(new WalletFirebaseListener(fbToken, fbUrl));
-		app.startKit(mCodes, creationTime, wFiledir, wFilename);
+
+		app.startKitFromSeed(mCodes, creationTime, wFiledir, wFilename);
+
 		new WebServer().start(app.getEventBus());
 	}
 
