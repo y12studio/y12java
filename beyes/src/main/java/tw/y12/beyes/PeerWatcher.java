@@ -19,6 +19,11 @@ import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.utils.BriefLogFormatter;
 import org.bitcoinj.utils.Threading;
 
+import tw.y12.beyes.event.EventGetBlock;
+import tw.y12.beyes.event.EventInvBlock;
+import tw.y12.beyes.event.EventInvTx;
+import tw.y12.beyes.event.EventMessage;
+
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.typesafe.config.Config;

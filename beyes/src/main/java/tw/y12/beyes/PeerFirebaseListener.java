@@ -8,6 +8,11 @@ import org.bitcoinj.core.StoredBlock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tw.y12.beyes.event.EventGetBlock;
+import tw.y12.beyes.event.EventInvBlock;
+import tw.y12.beyes.event.EventInvTx;
+import tw.y12.beyes.event.EventMessage;
+
 import com.firebase.client.AuthData;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;

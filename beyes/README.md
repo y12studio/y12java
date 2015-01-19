@@ -1,4 +1,9 @@
 
+```
+cd src/main
+protoc --proto_path=resources --java_out=java resources/590c-v1412-alpha4.proto
+```
+
 TEST 0.0.3
 
 https://crackling-heat-6124.firebaseio.com/beyes/t150117.json
@@ -12,8 +17,6 @@ $ cd beyes-0.0.3
 $ bin/beyes &
 
 ```
-
-
 
 
 TEST Fri Jan 16 08:08:51 UTC 2015

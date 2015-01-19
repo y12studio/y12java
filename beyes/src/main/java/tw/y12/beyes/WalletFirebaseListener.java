@@ -8,6 +8,10 @@ import org.bitcoinj.core.StoredBlock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tw.y12.beyes.event.EventDebug;
+import tw.y12.beyes.event.EventStoreBlock;
+import tw.y12.beyes.event.EventWalletAddr;
+
 import com.firebase.client.AuthData;
 import com.firebase.client.ChildEventListener;
 import com.firebase.client.DataSnapshot;
@@ -122,7 +126,7 @@ public class WalletFirebaseListener {
 	@Subscribe
 	public void listenEvDebug(EventDebug ev) {
 		System.out.println("Debug in Firebase Listener: " + ev.getMessage());
-		summaryRef.child("debug").setValue(ev.getMessage());
+		//summaryRef.child("debug").setValue(ev.getMessage());
 	}
 
 
