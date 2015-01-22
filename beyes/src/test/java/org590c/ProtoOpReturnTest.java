@@ -10,7 +10,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 import org590c.ProtoOpReturn.OpReturn;
 import org590c.ProtoOpReturn.OpReturn.Tag;
 import org590c.ProtoOpReturn.OpReturn.Type;
-import tw.y12.beyes.Utils;
+import tw.y12.beyes.YUtils;
 
 public class ProtoOpReturnTest {
 
@@ -23,11 +23,11 @@ public class ProtoOpReturnTest {
 		assertNotNull(opr);
 		System.out.println(opr);
 		assertEquals("0801120f0a0a68656c6c6f203539306310ec0e",
-				Utils.HEX.encode(opr.toByteArray()));
+				YUtils.HEX.encode(opr.toByteArray()));
 		assertEquals("590c0801120f0a0a68656c6c6f203539306310ec0e",
-				Utils.HEX.encode(Utils.wrap590c(opr.toByteArray())));
+				YUtils.HEX.encode(YUtils.wrap590c(opr.toByteArray())));
 
-		OpReturn oprRestore = ProtoOpReturn.OpReturn.parseFrom(Utils.unwrap590c(Utils.HEX
+		OpReturn oprRestore = ProtoOpReturn.OpReturn.parseFrom(YUtils.unwrap590c(YUtils.HEX
 				.decode("590c0801120f0a0a68656c6c6f203539306310ec0e")));
 		assertNotNull(oprRestore);
 		assertEquals(oprRestore.getType(), Type.TAG);

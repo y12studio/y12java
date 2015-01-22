@@ -302,7 +302,7 @@ public class WalletWatcherImpl implements WalletWatcher {
 		OpReturn opr = ProtoOpReturn.OpReturn.newBuilder().setType(Type.TAG)
 				.setTag(tag).build();
 
-		sendOpReturnMessage(Utils.wrap590c(opr.toByteArray()), x.getAddress(),
+		sendOpReturnMessage(YUtils.wrap590c(opr.toByteArray()), x.getAddress(),
 				Coin.valueOf(x.getValue()));
 	}
 

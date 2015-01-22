@@ -4,7 +4,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import org590c.ProtoOpReturn;
 import org590c.ProtoOpReturn.OpReturn;
-import tw.y12.beyes.Utils;
+import tw.y12.beyes.YUtils;
 
 public class EventTxCoinsReceived {
 	
@@ -45,7 +45,7 @@ public class EventTxCoinsReceived {
 	public OpReturn getProtocolBuffer(){
 		OpReturn r = null;
 		try {
-			r = ProtoOpReturn.OpReturn.parseFrom(Utils.unwrap590c(this.opReturnData));
+			r = ProtoOpReturn.OpReturn.parseFrom(YUtils.unwrap590c(this.opReturnData));
 		} catch (InvalidProtocolBufferException e) {
 			e.printStackTrace();
 		}
@@ -59,7 +59,7 @@ public class EventTxCoinsReceived {
 		return "EventTxCoinsReceived ["
 				+ (hash != null ? "hash=" + hash + ", " : "")
 				+ (detail != null ? "detail=" + detail + ", " : "")
-				+ (opReturnData != null ? "opReturn=" + Utils.HEX.encode(opReturnData)
+				+ (opReturnData != null ? "opReturn=" + YUtils.HEX.encode(opReturnData)
 						: "") + "]";
 	}
 
