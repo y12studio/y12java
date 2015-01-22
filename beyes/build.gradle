@@ -3,7 +3,7 @@ apply plugin: 'eclipse'
 apply plugin:'application'
 
 sourceCompatibility = 1.7
-version = '0.0.4'
+version = '0.0.6'
 mainClassName = "tw.y12.beyes.AppMain"
 applicationDefaultJvmArgs = ["-Dconfig.file=conf.json"]
 

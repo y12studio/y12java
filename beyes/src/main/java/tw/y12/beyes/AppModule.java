@@ -13,6 +13,7 @@ public class AppModule implements Module {
 	public void configure(Binder binder) {
 		binder.bind(AppBaseSrv.class).to(AppBaseSrvImpl.class).asEagerSingleton();
 		binder.bind(WalletWatcher.class).to(WalletWatcherImpl.class).asEagerSingleton();
+		binder.bind(BlockActer.class).to(BlockActerImpl.class).asEagerSingleton();
 		binder.bind(HelloResource.class);
 		binder.bind(WalletResource.class);
 		binder.bind(Greeter.class).to(DefaultGreeter.class);

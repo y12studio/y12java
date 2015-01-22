@@ -55,6 +55,18 @@ public class EventSendCoin {
 	public void setAddress(String address) {
 		this.address = address;
 	}
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "EventSendCoin ["
+				+ (tagMsg != null ? "tagMsg=" + tagMsg + ", " : "")
+				+ (address != null ? "address=" + address + ", " : "")
+				+ "value=" + value + ", tagInt32=" + tagInt32 + "]";
+	}
 	
 	
 

@@ -32,7 +32,7 @@ public class WalletResource {
 		this.eventBus.post(new EventDebug("Request /rest/wallet/" + app + "/"
 				+ addr + "/" + coin));
 		if(app.equals("send")){
-			this.eventBus.post(new EventSendCoin(addr, Long.valueOf(coin), "REST-JAX-RS@TK", 0));
+			this.eventBus.post(new EventSendCoin(addr, Long.valueOf(coin), null, 0));
 		}
 		return "ok";
 	}
