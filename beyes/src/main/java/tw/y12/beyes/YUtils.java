@@ -22,6 +22,7 @@ public class YUtils {
 	public static final byte[] Prefix590c = { B59, B0c };
 
 	public static final BaseEncoding HEX = BaseEncoding.base16().lowerCase();
+	public static final BaseEncoding BASE64URL = BaseEncoding.base64Url();
 
 	public static final byte[] wrap590c(byte[] target) {
 		return Bytes.concat(Prefix590c, checkNotNull(target));

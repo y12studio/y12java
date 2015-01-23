@@ -3,10 +3,7 @@ package org590c;
 import static org.junit.Assert.*;
 
 import org.junit.Test;
-
-import com.google.common.primitives.Bytes;
 import com.google.protobuf.InvalidProtocolBufferException;
-
 import org590c.ProtoOpReturn.OpReturn;
 import org590c.ProtoOpReturn.OpReturn.Tag;
 import org590c.ProtoOpReturn.OpReturn.Type;
