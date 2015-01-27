@@ -1,13 +1,10 @@
 package tw.y12.beyes.googl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import tw.y12.beyes.ThirdPartyService;
 import tw.y12.beyes.YUtils;
-import tw.y12.beyes.ThirdPartyService.PushUrlCallback;
 
 public class ThirdPartyServiceGooglImpl implements ThirdPartyService {
 

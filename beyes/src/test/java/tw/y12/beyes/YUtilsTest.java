@@ -10,10 +10,24 @@ import org.bitcoinj.params.MainNetParams;
 import org.bitcoinj.params.TestNet2Params;
 import org.bitcoinj.params.TestNet3Params;
 import org.junit.Test;
+import org590c.ProtoOpReturn;
+import org590c.ProtoOpReturn.OpReturn;
+import org590c.ProtoOpReturn.OpReturn.Tag;
+import org590c.ProtoOpReturn.OpReturn.Type;
 
 import com.google.common.primitives.Chars;
 
 public class YUtilsTest {
+	
+	@Test(expected = Exception.class)
+	public void testOver40bytes() throws Exception {
+		Tag tag = Tag.newBuilder().setTagInt32(1900).setTagString("hello 590c xoOH5vkmmcwDsfc4nDQ5vPcXSWh2jyETDGkSNO5zk4nbESGD6k0tg")
+				.build();
+		OpReturn opr = ProtoOpReturn.OpReturn.newBuilder().setType(Type.TAG)
+				.setTag(tag).build();
+		assertNotNull(opr);
+		byte[] result = YUtils.wrap590c(opr.toByteArray());
+	}
 
 	@Test
 	public void verifyBitidUri() throws Exception {

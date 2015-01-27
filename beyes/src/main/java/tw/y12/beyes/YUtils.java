@@ -2,15 +2,12 @@ package tw.y12.beyes;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
 
 import org.bitcoinj.core.Address;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.NetworkParameters;
-import org.bitcoinj.params.MainNetParams;
-import org.bitcoinj.params.TestNet3Params;
 
 import com.google.common.io.BaseEncoding;
 import com.google.common.primitives.Bytes;
@@ -25,6 +22,9 @@ public class YUtils {
 	public static final BaseEncoding BASE64URL = BaseEncoding.base64Url();
 
 	public static final byte[] wrap590c(byte[] target) {
+		checkArgument(target != null);
+		checkArgument(target.length <= 38, "OPRETURN bytes size "
+				+ target.length + " /max 40 bytes");
 		return Bytes.concat(Prefix590c, checkNotNull(target));
 	}
 
