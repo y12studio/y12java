@@ -8,5 +8,7 @@ public interface AppBaseSrv {
 	public EventBus getEventBus();
 
 	Config getConf();
+	
+	NonPersistConf getNonPersistConf();
 
 }

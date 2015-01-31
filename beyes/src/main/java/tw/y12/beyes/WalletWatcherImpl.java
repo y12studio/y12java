@@ -83,8 +83,7 @@ public class WalletWatcherImpl implements WalletWatcher {
 		}
 
 		public void onWalletChanged(Wallet wallet) {
-			// TODO Auto-generated method stub
-
+			updateNonPersistBalance();
 		}
 
 		public void onTransactionConfidenceChanged(Wallet wallet, Transaction tx) {
@@ -104,8 +103,8 @@ public class WalletWatcherImpl implements WalletWatcher {
 
 		public void onCoinsSent(Wallet wallet, Transaction tx,
 				Coin prevBalance, Coin newBalance) {
-			// TODO Auto-generated method stub
 
+			updateNonPersistBalance();
 		}
 
 		public void onCoinsReceived(Wallet wallet, Transaction tx,
@@ -133,6 +132,7 @@ public class WalletWatcherImpl implements WalletWatcher {
 				}
 			}
 			eventBus.post(txev);
+			updateNonPersistBalance();
 		}
 	};
 
@@ -259,6 +259,11 @@ public class WalletWatcherImpl implements WalletWatcher {
 		System.out.println("Balance=" + wallet.getBalance().getValue());
 		System.out.println("Balance(Estimated)="
 				+ wallet.getBalance(BalanceType.ESTIMATED));
+		this.updateNonPersistBalance();
+	}
+	
+	private void updateNonPersistBalance(){		
+		apsrv.getNonPersistConf().setWalletBalance(wallet.getBalance().getValue());
 	}
 
 	private void sendOpReturnMessage(byte[] cargo, String toAddrStr, Coin value) {

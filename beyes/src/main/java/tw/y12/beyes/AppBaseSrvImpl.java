@@ -18,10 +18,12 @@ public class AppBaseSrvImpl implements AppBaseSrv {
 
 	private final EventBus eventBus;
 	private final Config conf;
+	private final NonPersistConf nonPconf;
 
 	public AppBaseSrvImpl() throws UnreadableWalletException {
 		this.eventBus = new EventBus("AppEventBus");
 		this.eventBus.register(new DebugListener());
+		this.nonPconf = new NonPersistConf();
 		conf = ConfigFactory.load();
 
 		String fbToken = conf.getString("firebase_token");
@@ -37,6 +39,11 @@ public class AppBaseSrvImpl implements AppBaseSrv {
 
 	public Config getConf() {
 		return conf;
+	}
+
+	@Override
+	public NonPersistConf getNonPersistConf() {
+		return this.nonPconf;
 	}
 
 }

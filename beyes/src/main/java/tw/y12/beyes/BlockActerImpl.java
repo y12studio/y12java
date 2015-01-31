@@ -35,7 +35,7 @@ public class BlockActerImpl implements BlockActer {
 		this.eventBus.register(this);
 		Config conf = this.appBaseSrv.getConf();
 		this.testAddr1 = conf.getString("test_addr_1");
-		
+
 	}
 
 	@Subscribe
@@ -43,21 +43,24 @@ public class BlockActerImpl implements BlockActer {
 		StoredBlock b = ev.getBlock();
 		try {
 			log.info("[BlockActer] EvBus Store Block :" + b.getHeight());
-			sendTestAddrWithBlockHeightTag(b);
+			if (this.appBaseSrv.getNonPersistConf().isAutoTest1()) {
+				sendTestAddrWithBlockHeightTag(b);
+			}
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
 	}
 
-	/** TEST ONLY
+	/**
+	 * TEST ONLY
+	 * 
 	 * @param b
 	 */
 	private void sendTestAddrWithBlockHeightTag(StoredBlock b) {
-		// 72 blocks ~= 12 hrs 
+		// 72 blocks ~= 12 hrs
 		// 12 blocks ~= 2 hrs
 		if (b.getHeight() % 24 == 0 && this.testAddr1 != null) {
-			this.eventBus.post(new EventSendCoin(
-					this.testAddr1, b.getHeight(),
+			this.eventBus.post(new EventSendCoin(this.testAddr1, b.getHeight(),
 					"BK" + b.getHeight() + "@590c.org", 0));
 		}
 	}

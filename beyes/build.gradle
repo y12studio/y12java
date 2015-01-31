@@ -3,7 +3,7 @@ apply plugin: 'eclipse'
 apply plugin:'application'
 
 sourceCompatibility = 1.7
-version = '0.0.6'
+version = '0.0.7'
 mainClassName = "tw.y12.beyes.AppMain"
 applicationDefaultJvmArgs = ["-Dconfig.file=conf.json"]
 
@@ -28,6 +28,7 @@ dependencies {
     compile 'com.google.protobuf:protobuf-java:2.6.1'
     compile 'org.jboss.resteasy:resteasy-jaxrs:3.0.10.Final'
     compile 'org.jboss.resteasy:resteasy-guice:3.0.10.Final'
+    compile 'org.jboss.resteasy:resteasy-jackson2-provider:3.0.10.Final'
     compile 'com.google.inject:guice:3.0'
     compile 'com.squareup.retrofit:retrofit:1.9.0'
     

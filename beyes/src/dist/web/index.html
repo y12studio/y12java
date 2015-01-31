@@ -1,49 +1,89 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-  <meta charset="utf-8">
-  <title>beyes</title>
-  <meta name="description" content="590c.org is the protocol explorer in OP_RETURN on bitcoin's protocol and other digital currencies." />
-  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/angular_material/0.7.0/angular-material.min.css">
-  <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
-  <link href="app.css" rel="stylesheet">
-  <style>
-    div.icon {
-      margin-left: 1em;
-      text-align: center;
-    }
-  </style>
+<meta charset="utf-8">
+<title>beyes</title>
+<meta name="description"
+	content="590c.org is the protocol explorer in OP_RETURN on bitcoin's protocol and other digital currencies." />
+<meta name="viewport"
+	content="initial-scale=1, maximum-scale=1, user-scalable=no" />
+<link rel="stylesheet"
+	href="//ajax.googleapis.com/ajax/libs/angular_material/0.7.0/angular-material.min.css">
+<link
+	href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css"
+	rel="stylesheet">
+<link href="app.css" rel="stylesheet">
+<style>
+
+md-card {
+    padding: 1em;
+}
+
+div.icon {
+	margin-left: 1em;
+	text-align: center;
+}
+
+textarea {
+	display: block;
+	margin: 1em auto;
+}
+</style>
 </head>
 <body ng-app="YourApp">
-  <div class="doc-content" ng-controller="YourController">
-    <md-toolbar>
-      <div class="md-toolbar-tools">
-        <span class="md-flex">beyes</span>
-      </div>
-    </md-toolbar>
-    <md-card>
-        <div style="text-align:center;">
-      <h2>Bitcoin OP_RETRUN Protocol</h2>
-        </div>
-      <h2>{{foo}}</h2>
-    </md-card>
-  
-  </div>
-  <!-- Angular Material Dependencies -->
-  <script src="//cdn.jsdelivr.net/hammerjs/2.0.4/hammer.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.8/angular.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.8/angular-animate.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.8/angular-aria.min.js"></script>
-  <script src="//ajax.googleapis.com/ajax/libs/angular_material/0.7.0/angular-material.min.js"></script>
-  <script>
-    // Include app dependency on ngMaterial
-    angular.module('YourApp', ['ngMaterial'])
-      .controller("YourController", ['$scope', function($scope) {
-          $scope.foo = "hello xxx123";
-      }]);
-  </script>
+	<div class="doc-content" ng-controller="YourController">
+		<md-toolbar>
+		<div class="md-toolbar-tools">
+			<span class="md-flex">beyes</span>
+		</div>
+		</md-toolbar>
+		<md-card>
+		<div style="text-align: center;">
+			<h2>Bitcoin OP_RETRUN Protocol</h2>
+		</div>
+		<h2>{{foo}}</h2>
+
+		<md-switch ng-model="npc.autoTest1" aria-label="AutoTest1" ng-change="onChange()">
+		AutoTest1: {{ npc.autoTest1 }} </md-switch>
+		<h4>balance:{{npc.walletBalance}}</h4>
+		<h4>NonPersistConf</h4>
+		<textarea rows="6" cols="60">{{npcjson}}</textarea> </md-card>
+
+	</div>
+	<!-- Angular Material Dependencies -->
+	<script src="//cdn.jsdelivr.net/hammerjs/2.0.4/hammer.min.js"></script>
+	<script
+		src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.8/angular.min.js"></script>
+	<script
+		src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.8/angular-animate.min.js"></script>
+	<script
+		src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.8/angular-resource.min.js"></script>
+	<script
+		src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.8/angular-aria.min.js"></script>
+	<script
+		src="//ajax.googleapis.com/ajax/libs/angular_material/0.7.0/angular-material.min.js"></script>
+	<script>
+		// Include app dependency on ngMaterial
+		angular.module('YourApp', [ 'ngMaterial', 'ngResource' ]).controller(
+				"YourController",
+				[ '$scope', '$resource', function($scope, $resource) {
+					var npconf = $resource('/rest/hello/npconf');
+					$scope.foo = "hello xxx123";
+					npconf.get(null, function(v) {
+						console.log(v)
+						$scope.npc = v
+						$scope.npcjson = JSON.stringify(v, null, 2)
+					});
+					
+					 $scope.onChange = function(){
+						console.log("change autotest 1 to " + $scope.npc.autoTest1);
+						$resource('/rest/hello/act/AutoTest1/'+($scope.npc.autoTest1?'ON':'OFF'))
+						   .get(null,function(v){
+							console.log(v);
+						})
+				     };
+				} ]);
+	</script>
 </body>
 
 </html>
