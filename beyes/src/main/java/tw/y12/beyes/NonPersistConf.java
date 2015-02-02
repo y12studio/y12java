@@ -3,6 +3,7 @@ package tw.y12.beyes;
 public class NonPersistConf {
 	
 	private long walletBalance = 0;
+	private String walletAddr = "";
 
 	private boolean autoTest1 = false;
 
@@ -24,13 +25,24 @@ public class NonPersistConf {
 		this.walletBalance = walletBalance;
 	}
 
+	
+
+	public String getWalletAddr() {
+		return walletAddr;
+	}
+
+	public void setWalletAddr(String walletAddr) {
+		this.walletAddr = walletAddr;
+	}
+
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
 	public String toString() {
-		return "NonPersistConf [walletBalance=" + walletBalance
-				+ ", autoTest1=" + autoTest1 + "]";
+		return "NonPersistConf [walletBalance=" + walletBalance + ", "
+				+ (walletAddr != null ? "walletAddr=" + walletAddr + ", " : "")
+				+ "autoTest1=" + autoTest1 + "]";
 	}
 
 }

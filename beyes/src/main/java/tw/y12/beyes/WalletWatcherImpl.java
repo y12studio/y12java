@@ -110,25 +110,30 @@ public class WalletWatcherImpl implements WalletWatcher {
 		public void onCoinsReceived(Wallet wallet, Transaction tx,
 				Coin prevBalance, Coin newBalance) {
 			eventBus.post(new EventDebug("onCoinsReceived "
-					+ tx.getHashAsString()
-					+ " : balance from "
-					+ prevBalance + " to " + newBalance));
-			
-			// invoke after org.bitcoinj.core.Wallet - Received a pending transaction
+					+ tx.getHashAsString() + " : balance from " + prevBalance
+					+ " to " + newBalance));
+
+			// invoke after org.bitcoinj.core.Wallet - Received a pending
+			// transaction
 			// Not after org.bitcoinj.core.Wallet - Received tx for xxx BTC
 			String txHash = tx.getHashAsString();
-			
-			EventTxCoinsReceived txev = new EventTxCoinsReceived(txHash, tx.toString());
-			
-			for(TransactionOutput txout : tx.getOutputs()){
-				if(txout.getScriptPubKey().isOpReturn()){
-					// isOpReturn = chunks.size() == 2 && chunks.get(0).equalsOpCode(OP_RETURN);
+
+			EventTxCoinsReceived txev = new EventTxCoinsReceived(txHash,
+					tx.toString());
+
+			for (TransactionOutput txout : tx.getOutputs()) {
+				if (txout.getScriptPubKey().isOpReturn()) {
+					// isOpReturn = chunks.size() == 2 &&
+					// chunks.get(0).equalsOpCode(OP_RETURN);
 					// Utils.HEX.encode(txout.getScriptPubKey().getProgram())
 					// 6a18590c080112120a0e524553542d4a41582d525340544b1000
 					// Utils.HEX.encode(txout.getScriptPubKey().getChunks().get(1).data))
 					// 590c080112120a0e524553542d4a41582d525340544b1000
-					// eventBus.post(new EventDebug("onCoinsReceived Found OP_RETURN:" + Utils.HEX.encode(txout.getScriptPubKey().getChunks().get(1).data)));
-					txev.setOpReturnData(txout.getScriptPubKey().getChunks().get(1).data);
+					// eventBus.post(new
+					// EventDebug("onCoinsReceived Found OP_RETURN:" +
+					// Utils.HEX.encode(txout.getScriptPubKey().getChunks().get(1).data)));
+					txev.setOpReturnData(txout.getScriptPubKey().getChunks()
+							.get(1).data);
 				}
 			}
 			eventBus.post(txev);
@@ -147,7 +152,7 @@ public class WalletWatcherImpl implements WalletWatcher {
 		public void receiveFromBlock(Transaction tx, StoredBlock block,
 				NewBlockType blockType, int relativityOffset)
 				throws VerificationException {
-			
+
 		}
 
 		public boolean notifyTransactionIsInBlock(Sha256Hash txHash,
@@ -261,9 +266,11 @@ public class WalletWatcherImpl implements WalletWatcher {
 				+ wallet.getBalance(BalanceType.ESTIMATED));
 		this.updateNonPersistBalance();
 	}
-	
-	private void updateNonPersistBalance(){		
-		apsrv.getNonPersistConf().setWalletBalance(wallet.getBalance().getValue());
+
+	private void updateNonPersistBalance() {
+		NonPersistConf npc = apsrv.getNonPersistConf();
+		npc.setWalletBalance(wallet.getBalance().getValue());
+		npc.setWalletAddr(wallet.currentReceiveAddress().toString());
 	}
 
 	private void sendOpReturnMessage(byte[] cargo, String toAddrStr, Coin value) {
@@ -295,25 +302,30 @@ public class WalletWatcherImpl implements WalletWatcher {
 		log.info("SendEvent : " + ev.toString());
 
 		EventSendCoin x = checkNotNull(ev);
-		
-		String tagMsg = x.getTagMsg();
-		
-		if(tagMsg == null){
-			tagMsg = "BK" + wallet.getLastBlockSeenHeight() + "@590c.org";
+		try {
+
+			String tagMsg = x.getTagMsg();
+
+			if (tagMsg == null) {
+				tagMsg = "BK" + wallet.getLastBlockSeenHeight() + "@590c.org";
+			}
+
+			Tag tag = Tag.newBuilder().setTagInt32(ev.getTagInt32())
+					.setTagString(tagMsg).build();
+			OpReturn opr = ProtoOpReturn.OpReturn.newBuilder()
+					.setType(Type.TAG).setTag(tag).build();
+
+			sendOpReturnMessage(YUtils.wrap590c(opr.toByteArray()),
+					x.getAddress(), Coin.valueOf(x.getValue()));
+		} catch (Exception ex) {
+			ex.printStackTrace();
 		}
-
-		Tag tag = Tag.newBuilder().setTagInt32(ev.getTagInt32())
-				.setTagString(x.getTagMsg()).build();
-		OpReturn opr = ProtoOpReturn.OpReturn.newBuilder().setType(Type.TAG)
-				.setTag(tag).build();
-
-		sendOpReturnMessage(YUtils.wrap590c(opr.toByteArray()), x.getAddress(),
-				Coin.valueOf(x.getValue()));
 	}
 
 	@Subscribe
 	public void listenEvDebug(EventDebug ev) {
-		System.out.println("[Debug in Wallet] Wallet Balance = " + wallet.getBalance());
+		System.out.println("[Debug in Wallet] Wallet Balance = "
+				+ wallet.getBalance());
 	}
 
 	public void start() throws UnreadableWalletException {

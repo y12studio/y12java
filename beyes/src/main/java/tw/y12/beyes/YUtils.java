@@ -6,6 +6,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.Arrays;
 
 import org.bitcoinj.core.Address;
+import org.bitcoinj.core.AddressFormatException;
+import org.bitcoinj.core.DumpedPrivateKey;
 import org.bitcoinj.core.ECKey;
 import org.bitcoinj.core.NetworkParameters;
 
@@ -37,17 +39,26 @@ public class YUtils {
 	/**
 	 * @param params
 	 * @param address
-	 * @param bitidUri
+	 * @param message
 	 * @param sigBase64
 	 * @return
 	 * @throws Exception
 	 */
-	public static boolean verifyBitIdUri(NetworkParameters params,
-			String address, String bitidUri, String sigBase64) throws Exception {
-		ECKey key = ECKey.signedMessageToKey(bitidUri, sigBase64);
+	public static boolean verifySignMessage(NetworkParameters params,
+			String address, String message, String sigBase64) throws Exception {
+		ECKey key = ECKey.signedMessageToKey(message, sigBase64);
 		Address gotAddress = key.toAddress(params);
 		Address expectedAddress = new Address(params, address);
 		return expectedAddress.equals(gotAddress);
+	}
+
+	public static String signatureMessage(NetworkParameters params,
+			String privateKeyWif, String message) throws AddressFormatException {
+		String r = null;
+		ECKey key = checkNotNull(new DumpedPrivateKey(params, privateKeyWif)
+				.getKey());
+		r = key.signMessage(message);
+		return r;
 	}
 
 }

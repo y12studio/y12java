@@ -24,7 +24,7 @@ public class WalletResource {
 	}
 
 	@GET
-	@Path("{app}/{addr}/{coin}")
+	@Path("/{app}/{addr}/{coin}")
 	public String wallet(@PathParam("app") final String app,
 			@PathParam("addr") final String addr,
 			@PathParam("coin") final String coin) {

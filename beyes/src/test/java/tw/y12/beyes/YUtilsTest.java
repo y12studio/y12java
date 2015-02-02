@@ -36,9 +36,22 @@ public class YUtilsTest {
 		String sigBase64 = "ID5heI0WOeWoryGhZHaxoOH5vkmmcwDsfc4nDQ5vPcXSWh2jyETDGkSNO5zk4nbESGD6k0tgFxYA3HzlEGOf5Uc=";
 		String expectedAddress = "mpsaRD2ugdCY1iFrQdsDYRT4qeZzCnvGHW";
 
-		boolean isValid = YUtils.verifyBitIdUri(TestNet3Params.get(),
+		boolean isValid = YUtils.verifySignMessage(TestNet3Params.get(),
 				expectedAddress, bitidUri, sigBase64);
 		assertTrue(isValid);
+	}
+	
+	@Test
+	public void testSignMessage() throws Exception {
+		
+		// https://rushwallet.com/#ze5w7FxilMcaxaxSuaFylup9rJQc5c
+		// addr = 1PVsbyJKELpqfwWpBxhkbv7QqhdWG9tGMy
+		String wif = "5KLDTYcKeDJmrEdBKwXPkFDTVREd8XGQNBx3td9HsoREa1RX1Fz";
+		String message = "Hello https://www.facebook.com/groups/bitcoin.tw/";
+		
+		String signatureBase64 = YUtils.signatureMessage(MainNetParams.get(), wif, message);
+		String target = "G8pl97rGPTh6z+20UyFt0Dj2BwCMjFNRbAybSH++Gcg6S4kHynyaY6W4orsMQ4MfUXceQyORXtz4P2hTY9L+WWs=";
+		assertEquals(target,signatureBase64);
 	}
 
 	@Test

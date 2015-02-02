@@ -14,9 +14,8 @@
 	rel="stylesheet">
 <link href="app.css" rel="stylesheet">
 <style>
-
 md-card {
-    padding: 1em;
+	padding: 1em;
 }
 
 div.icon {
@@ -43,9 +42,25 @@ textarea {
 		</div>
 		<h2>{{foo}}</h2>
 
-		<md-switch ng-model="npc.autoTest1" aria-label="AutoTest1" ng-change="onChange()">
-		AutoTest1: {{ npc.autoTest1 }} </md-switch>
-		<h4>balance:{{npc.walletBalance}}</h4>
+		<md-switch ng-model="npc.autoTest1" aria-label="AutoTest1"
+			ng-change="onChange()"> AutoTest1: {{ npc.autoTest1 }} </md-switch>
+
+		<h4>wallet current receive address:{{npc.walletAddr}}</h4>
+		<h4>wallet balance:{{npc.walletBalance}}</h4>
+
+		<md-content class="md-padding" layout="row" layout-sm="column">
+		<md-input-container> <label>ADDRESS</label> <input
+			ng-model="send1.addr"> </md-input-container> <md-input-container>
+		<label>Satoshi</label> <input ng-model="send1.value" type="number">
+		</md-input-container> <md-input-container> <label>Message</label> <input
+			ng-model="send1.msg"> </md-input-container> </md-content>
+		<div layout="row" layout-align="center center">
+		
+			<div>
+				<md-button class="md-raised md-primary" ng-click="send1Act()">Send</md-button>
+			</div>
+			
+		</div>
 		<h4>NonPersistConf</h4>
 		<textarea rows="6" cols="60">{{npcjson}}</textarea> </md-card>
 
@@ -66,23 +81,44 @@ textarea {
 		// Include app dependency on ngMaterial
 		angular.module('YourApp', [ 'ngMaterial', 'ngResource' ]).controller(
 				"YourController",
-				[ '$scope', '$resource', function($scope, $resource) {
-					var npconf = $resource('/rest/hello/npconf');
-					$scope.foo = "hello xxx123";
-					npconf.get(null, function(v) {
-						console.log(v)
-						$scope.npc = v
-						$scope.npcjson = JSON.stringify(v, null, 2)
-					});
-					
-					 $scope.onChange = function(){
-						console.log("change autotest 1 to " + $scope.npc.autoTest1);
-						$resource('/rest/hello/act/AutoTest1/'+($scope.npc.autoTest1?'ON':'OFF'))
-						   .get(null,function(v){
-							console.log(v);
-						})
-				     };
-				} ]);
+				[
+						'$scope',
+						'$resource',
+						function($scope, $resource) {
+							var npconf = $resource('/rest/hello/npconf');
+							$scope.foo = "hello xxx123";
+							$scope.send1 = {
+								'addr' : '1QKK7Qt9UV6avFoKeWHozK2wgpJSjAkU9s',
+								'value' : 123456,
+								'msg' : 'none'
+							};
+							npconf.get(null, function(v) {
+								console.log(v)
+								$scope.npc = v
+								$scope.npcjson = JSON.stringify(v, null, 2)
+							});
+
+							$scope.send1Act = function() {
+								// /rest/wallet/send/1Kxxxx/386688
+								var senduri = '/rest/wallet/send/'
+										+ $scope.send1.addr + '/'
+										+ $scope.send1.value;
+								console.log(senduri);
+								$resource(senduri).get(null,function(v){console.log(v);});
+							}
+
+							$scope.onChange = function() {
+								console.log("change autotest 1 to "
+										+ $scope.npc.autoTest1);
+								$resource(
+										'/rest/hello/act/AutoTest1/'
+												+ ($scope.npc.autoTest1 ? 'ON'
+														: 'OFF')).get(null,
+										function(v) {
+											console.log(v);
+										})
+							};
+						} ]);
 	</script>
 </body>
 
